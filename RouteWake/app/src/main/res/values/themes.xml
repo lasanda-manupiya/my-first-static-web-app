@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        A minimal theme. The real UI styling is done in Compose
+        (see ui/theme). We extend a Material3 NoActionBar base and make the
+        status bar light/white to match the white Compose surfaces.
+    -->
+    <style name="Theme.RouteWake" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+</resources>
