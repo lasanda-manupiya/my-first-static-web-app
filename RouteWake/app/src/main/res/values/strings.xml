@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">RouteWake</string>
+
+    <!-- Notification -->
+    <string name="tracking_channel_name">RouteWake Tracking</string>
+    <string name="tracking_channel_desc">Persistent notification shown while RouteWake tracks your destination.</string>
+    <string name="tracking_notification_title">RouteWake is tracking your destination</string>
+    <string name="alarm_channel_name">RouteWake Alarm</string>
+    <string name="alarm_channel_desc">Plays when you reach your destination.</string>
+</resources>
