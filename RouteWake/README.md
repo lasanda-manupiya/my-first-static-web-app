@@ -98,7 +98,8 @@ gradle wrapper            # creates gradlew + gradle-wrapper.jar
 ```
 
 ### Notes
-- **minSdk 24**, **targetSdk 35**, Kotlin 2.0, Compose BOM 2024.12.
+- **minSdk 24**, **targetSdk 36** (Android 16 — meets Google Play's target API
+  policy), Kotlin 2.0, Compose BOM 2024.12.
 - Grant **Location** and **Notification** permissions when prompted, or the
   tracking service can’t start.
 - For best results enable **High accuracy mode** (Settings) and test outdoors —
