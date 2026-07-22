@@ -32,15 +32,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.routewake.app.model.AlarmSound
+import com.routewake.app.model.UserProfile
+import com.routewake.app.ui.components.ProfileAvatar
 import com.routewake.app.ui.components.RadiusSelector
 import com.routewake.app.ui.theme.Green
+import com.routewake.app.ui.theme.GreenLight
 import com.routewake.app.ui.theme.TextPrimary
 import com.routewake.app.ui.theme.TextSecondary
 import com.routewake.app.ui.theme.White
 import com.routewake.app.viewmodel.SettingsViewModel
+import java.util.Calendar
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    profile: UserProfile = UserProfile()
+) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     Column(
@@ -55,6 +62,11 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             color = TextPrimary,
             modifier = Modifier.padding(vertical = 16.dp)
         )
+
+        if (profile.onboarded) {
+            ProfileCard(profile)
+            Spacer(Modifier.height(16.dp))
+        }
 
         SettingsSection(title = "Alarm") {
             Text("Default alert radius", fontWeight = FontWeight.SemiBold, color = TextPrimary)
@@ -108,6 +120,47 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             fontSize = 13.sp
         )
         Spacer(Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun ProfileCard(profile: UserProfile) {
+    val year = Calendar.getInstance().get(Calendar.YEAR)
+    val age = profile.turningAge(year)
+    val subtitle = buildString {
+        append(profile.gender.displayName)
+        if (age != null) append(" · $age yrs")
+        if (profile.hasBirthday) {
+            val months = arrayOf(
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            )
+            append(" · 🎂 ${profile.birthDay} ${months[profile.birthMonth - 1]}")
+        }
+    }
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = GreenLight),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ProfileAvatar(profile = profile, size = 56.dp)
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                Text(
+                    profile.name.ifBlank { "You" },
+                    fontWeight = FontWeight.Bold,
+                    color = TextPrimary,
+                    fontSize = 18.sp
+                )
+                Text(subtitle, color = TextSecondary, fontSize = 13.sp)
+            }
+        }
     }
 }
 

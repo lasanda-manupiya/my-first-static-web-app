@@ -21,13 +21,13 @@ class PlacesRepository(private val context: Context) {
     private val maxRecent = 8
 
     val recentPlaces: Flow<List<Place>> =
-        context.dataStore.data.map { prefs -> decodeList(prefs[Keys.RECENT]) }
+        context.appDataStore.data.map { prefs -> decodeList(prefs[Keys.RECENT]) }
 
     val savedPlaces: Flow<List<Place>> =
-        context.dataStore.data.map { prefs -> decodeList(prefs[Keys.SAVED]) }
+        context.appDataStore.data.map { prefs -> decodeList(prefs[Keys.SAVED]) }
 
     suspend fun addRecent(place: Place) {
-        context.dataStore.edit { prefs ->
+        context.appDataStore.edit { prefs ->
             val current = decodeList(prefs[Keys.RECENT])
                 .filterNot { it.sameLocation(place) }
                 .toMutableList()
@@ -37,7 +37,7 @@ class PlacesRepository(private val context: Context) {
     }
 
     suspend fun savePlace(place: Place) {
-        context.dataStore.edit { prefs ->
+        context.appDataStore.edit { prefs ->
             val current = decodeList(prefs[Keys.SAVED])
             if (current.none { it.sameLocation(place) }) {
                 prefs[Keys.SAVED] = encodeList(current + place)
@@ -46,7 +46,7 @@ class PlacesRepository(private val context: Context) {
     }
 
     suspend fun removeSaved(place: Place) {
-        context.dataStore.edit { prefs ->
+        context.appDataStore.edit { prefs ->
             val current = decodeList(prefs[Keys.SAVED]).filterNot { it.sameLocation(place) }
             prefs[Keys.SAVED] = encodeList(current)
         }

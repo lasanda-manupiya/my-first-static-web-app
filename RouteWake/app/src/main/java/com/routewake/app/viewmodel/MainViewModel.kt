@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.routewake.app.location.LocationForegroundService
 import com.routewake.app.model.AlarmState
 import com.routewake.app.model.AppSettings
+import com.routewake.app.model.Gender
 import com.routewake.app.model.Place
+import com.routewake.app.model.UserProfile
 import com.routewake.app.storage.ActiveAlarmStore
 import com.routewake.app.storage.PlacesRepository
 import com.routewake.app.storage.SettingsRepository
+import com.routewake.app.storage.UserProfileRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +29,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     private val placesRepository = PlacesRepository(app)
     private val settingsRepository = SettingsRepository(app)
+    private val profileRepository = UserProfileRepository(app)
+
+    val profile: StateFlow<UserProfile> = profileRepository.profile
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserProfile())
 
     // Live alarm telemetry, surfaced straight from the in-memory store.
     val alarmState: StateFlow<AlarmState> = ActiveAlarmStore.state
@@ -54,6 +61,13 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
                     _selectedRadius.value = s.defaultRadiusMeters
                 }
             }
+        }
+    }
+
+    /** Saves the onboarding profile (name, date of birth, gender). */
+    fun saveProfile(name: String, year: Int, month: Int, day: Int, gender: Gender) {
+        viewModelScope.launch {
+            profileRepository.saveProfile(name, year, month, day, gender)
         }
     }
 

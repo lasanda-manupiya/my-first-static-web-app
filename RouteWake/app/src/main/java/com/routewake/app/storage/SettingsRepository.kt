@@ -5,14 +5,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.routewake.app.model.AlarmSound
 import com.routewake.app.model.AppSettings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-
-// Single DataStore instance for the whole app.
-private val Context.dataStore by preferencesDataStore(name = "routewake_settings")
 
 /**
  * Persists [AppSettings] using Jetpack DataStore (Preferences).
@@ -29,7 +25,7 @@ class SettingsRepository(private val context: Context) {
         val KEEP_SCREEN_ON = booleanPreferencesKey("keep_screen_on")
     }
 
-    val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
+    val settings: Flow<AppSettings> = context.appDataStore.data.map { prefs ->
         AppSettings(
             defaultRadiusMeters = prefs[Keys.DEFAULT_RADIUS] ?: 500,
             alarmSound = AlarmSound.fromName(prefs[Keys.ALARM_SOUND]),
@@ -41,20 +37,20 @@ class SettingsRepository(private val context: Context) {
     }
 
     suspend fun setDefaultRadius(meters: Int) =
-        context.dataStore.edit { it[Keys.DEFAULT_RADIUS] = meters }
+        context.appDataStore.edit { it[Keys.DEFAULT_RADIUS] = meters }
 
     suspend fun setAlarmSound(sound: AlarmSound) =
-        context.dataStore.edit { it[Keys.ALARM_SOUND] = sound.name }
+        context.appDataStore.edit { it[Keys.ALARM_SOUND] = sound.name }
 
     suspend fun setVibration(enabled: Boolean) =
-        context.dataStore.edit { it[Keys.VIBRATION] = enabled }
+        context.appDataStore.edit { it[Keys.VIBRATION] = enabled }
 
     suspend fun setSpeakName(enabled: Boolean) =
-        context.dataStore.edit { it[Keys.SPEAK_NAME] = enabled }
+        context.appDataStore.edit { it[Keys.SPEAK_NAME] = enabled }
 
     suspend fun setHighAccuracy(enabled: Boolean) =
-        context.dataStore.edit { it[Keys.HIGH_ACCURACY] = enabled }
+        context.appDataStore.edit { it[Keys.HIGH_ACCURACY] = enabled }
 
     suspend fun setKeepScreenOn(enabled: Boolean) =
-        context.dataStore.edit { it[Keys.KEEP_SCREEN_ON] = enabled }
+        context.appDataStore.edit { it[Keys.KEEP_SCREEN_ON] = enabled }
 }

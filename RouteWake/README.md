@@ -18,12 +18,26 @@ Built with **Kotlin**, **Jetpack Compose**, **MVVM**, **StateFlow**, and a
 
 | Screen | What it does |
 | --- | --- |
-| **Home** | App title, on-device place search, recent places, radius selector (100 m – 5 km), big green **Set Alarm** button |
+| **Onboarding** (first launch) | Asks name, gender and date of birth; shows a live local avatar preview |
+| **Home** | Personalized greeting + avatar, on-device place search, recent places, radius selector (100 m – 5 km), big green **Set Alarm** button |
 | **Map** | OpenStreetMap map, tap to drop a pin, destination marker, transparent green radius circle, bottom details card, **Start Alarm** |
 | **Tracking** | Live map, your location, dotted route line, live distance / ETA / speed / radius, red **Stop Alarm** |
 | **Alarm** | Big **ALARM!** title, destination name, pulsing bell, distance, **Stop** + **Snooze 5 min** |
 | **Saved Places** | Locally stored saved destinations (DataStore — no Room) |
-| **Settings** | Default radius, alarm sound, vibration, speak destination name, high-accuracy mode, keep screen on |
+| **Settings** | Profile card (avatar, name, age, birthday), default radius, alarm sound, vibration, speak destination name, high-accuracy mode, keep screen on |
+
+### Personalization & birthday wishes
+
+- **Onboarding** runs once on first launch and stores **name + gender + date of
+  birth** in DataStore (never leaves the device).
+- The app then **greets you by name** (time-of-day aware) and shows a **local
+  avatar** generated from your gender and age group — no avatar service or
+  network call; it's a tinted circle with a matching Material face icon.
+- On your **birthday**, RouteWake posts a notification wishing you a happy
+  birthday. This is driven by `AlarmManager.setInexactRepeating` (a daily
+  ~09:00 check) → `BirthdayReceiver`, which is re-armed after reboot by
+  `BootReceiver`. No exact-alarm permission, no WorkManager, no Room — all
+  local framework APIs. A "last wished year" flag prevents duplicate wishes.
 
 ---
 
@@ -41,17 +55,18 @@ RouteWake/
         └── java/com/routewake/app/
             ├── RouteWakeApp.kt              # Application (OSMDroid config)
             ├── MainActivity.kt             # Compose host + permissions
-            ├── model/                      # Place, AlarmState, AppSettings
+            ├── model/                      # Place, AlarmState, AppSettings, UserProfile, Gender
             ├── utils/                      # DistanceUtils, GeocoderHelper, Constants
-            ├── storage/                    # DataStore repos + in-memory ActiveAlarmStore
+            ├── storage/                    # DataStore (shared) + Settings/Places/UserProfile repos + ActiveAlarmStore
             ├── location/                   # Foreground service + PermissionHelper
             ├── alarm/                      # AlarmPlayer (sound/vibration/TTS)
+            ├── birthday/                   # BirthdayScheduler, BirthdayReceiver, BootReceiver
             ├── viewmodel/                  # MainViewModel, SettingsViewModel
             └── ui/
                 ├── theme/                  # Color, Type, Theme (white + green)
                 ├── navigation/             # Routes, NavGraph
-                ├── components/             # BottomBar, RadiusSelector, PlaceCard, OsmMapView
-                └── screens/                # Home/Map/Tracking/Alarm/Saved/Settings
+                ├── components/             # BottomBar, RadiusSelector, PlaceCard, OsmMapView, ProfileAvatar
+                └── screens/                # Onboarding/Home/Map/Tracking/Alarm/Saved/Settings
 ```
 
 ---

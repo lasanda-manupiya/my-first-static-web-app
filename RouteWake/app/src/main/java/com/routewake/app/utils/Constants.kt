@@ -12,7 +12,13 @@ object Constants {
     /** Notifications. */
     const val TRACKING_CHANNEL_ID = "routewake_tracking"
     const val ALARM_CHANNEL_ID = "routewake_alarm"
+    const val BIRTHDAY_CHANNEL_ID = "routewake_birthday"
     const val TRACKING_NOTIFICATION_ID = 1001
+    const val BIRTHDAY_NOTIFICATION_ID = 1002
+
+    /** Birthday check: fires (inexactly) once a day around this hour. */
+    const val BIRTHDAY_CHECK_HOUR = 9
+    const val BIRTHDAY_ALARM_REQUEST_CODE = 2001
 
     /** Default map start point (London) when no location is known yet. */
     const val DEFAULT_LAT = 52.4862

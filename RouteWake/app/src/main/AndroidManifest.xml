@@ -19,6 +19,9 @@
     <!-- Keep the device awake while the tracking service runs -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
+    <!-- Re-arm the daily birthday check after a reboot -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- OSMDroid needs network to download map tiles and storage for caching -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -65,6 +68,22 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <!-- Fires from the daily AlarmManager check to post birthday wishes -->
+        <receiver
+            android:name=".birthday.BirthdayReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- Reschedules the birthday check after a reboot -->
+        <receiver
+            android:name=".birthday.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

@@ -109,7 +109,11 @@ fun RouteWakeNavGraph(
                 )
             }
             composable(Routes.SETTINGS) {
-                SettingsScreen(viewModel = settingsViewModel)
+                val profile by mainViewModel.profile.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    viewModel = settingsViewModel,
+                    profile = profile
+                )
             }
         }
     }

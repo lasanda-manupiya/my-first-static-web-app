@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.routewake.app.ui.components.PlaceCard
+import com.routewake.app.ui.components.ProfileAvatar
 import com.routewake.app.ui.components.RadiusSelector
 import com.routewake.app.ui.theme.Green
 import com.routewake.app.ui.theme.TextPrimary
@@ -47,6 +48,7 @@ import com.routewake.app.utils.Constants
 import com.routewake.app.utils.GeocoderHelper
 import com.routewake.app.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 @Composable
 fun HomeScreen(
@@ -60,6 +62,7 @@ fun HomeScreen(
     val recentPlaces by viewModel.recentPlaces.collectAsStateWithLifecycle()
     val selectedDestination by viewModel.selectedDestination.collectAsStateWithLifecycle()
     val selectedRadius by viewModel.selectedRadius.collectAsStateWithLifecycle()
+    val profile by viewModel.profile.collectAsStateWithLifecycle()
 
     var query by remember { mutableStateOf("") }
     var searching by remember { mutableStateOf(false) }
@@ -89,23 +92,35 @@ fun HomeScreen(
     ) {
         item {
             Spacer(Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Route",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = TextPrimary
-                )
-                Text(
-                    text = "Wake",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = Green
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    if (profile.firstName.isNotBlank()) {
+                        Text(
+                            text = "${greeting()}, ${profile.firstName} 👋",
+                            color = TextSecondary,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Route",
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = "Wake",
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = Green
+                        )
+                    }
+                }
+                if (profile.onboarded) {
+                    ProfileAvatar(profile = profile, size = 48.dp)
+                }
             }
-            Text(
-                text = "Wake up, right on time.",
-                color = TextSecondary,
-                fontSize = 14.sp
-            )
         }
 
         item {
@@ -216,6 +231,15 @@ fun HomeScreen(
         }
     }
 }
+
+/** Time-of-day greeting used to personalize the home header. */
+private fun greeting(): String =
+    when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+        in 5..11 -> "Good morning"
+        in 12..16 -> "Good afternoon"
+        in 17..21 -> "Good evening"
+        else -> "Hello"
+    }
 
 @Composable
 private fun OutlinedButtonRow(onOpenMap: () -> Unit) {
